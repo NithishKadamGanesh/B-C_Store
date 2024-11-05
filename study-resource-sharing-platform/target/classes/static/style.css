@@ -1,0 +1,62 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.top-bar {
+	display: flex;
+        align-items: center;
+        justify-content: center; /* Centers the contents horizontally */
+  background: #333;
+  color: #fff;
+  padding: 1rem;
+  position: sticky;
+        top: 0;
+        z-index: 1000; /* Ensures the top bar stays above other content */
+        box-shadow: 0 4px 2px -2px gray; /* Adds a slight shadow for visibility */
+}
+
+.btn {
+  background: coral;
+  color: #fff;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 0.7rem 2rem;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+
+.page-info {
+  margin-left: 1rem;
+}
+
+.error {
+  background: orangered;
+  color: #fff;
+  padding: 1rem;
+}
+
+
+  .btn-back {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 0 10px; /* Adds spacing between buttons */
+  }
+
+  .btn-back:hover {
+    background-color: #0056b3;
+  }
+  
+  #pdf-render-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }

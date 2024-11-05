@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Uploaded Resources</title>
+    <link rel="stylesheet" href="/uploads_style.css">
+</head>
+<body>
+    <h1>Uploaded Resources</h1>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Tags</th>
+                <th>Upload Date</th>
+                <th>Preview</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="resource : ${resources}">
+                <td th:text="${resource.title}">Title</td>
+                <td th:text="${resource.description}">Description</td>
+                <td th:text="${resource.tags}">Tags</td>
+                <td th:text="${#dates.format(resource.uploadDate, 'yyyy-MM-dd HH:mm:ss')}">Upload Date</td>
+                <td>
+                    <a th:href="@{/preview/{id}(id=${resource.id})}">Preview</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+   <div class="back-link">
+        <a href="/">Back to Home</a>
+    </div>
+</body>
+</html>
