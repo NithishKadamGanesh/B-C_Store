@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Resource Sharing Platform</title>
+    <link rel="stylesheet" href="/css/style.css"> <!-- External CSS file for styles -->
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <header>
+        <nav class="navbar">
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/resources">Resources</a></li>
+                <li><a href="/upload">Upload</a></li>
+                <li>
+                    <form action="/logout" method="POST" style="display: inline;">
+                        <button type="submit" class="btn btn-logout">Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1>Welcome to the Study Resource Sharing Platform</h1>
+            <p>This platform allows students to share, upload, and manage study resources. You can start by uploading a resource or viewing the list of available resources.</p>
+            <div class="button-group">
+                <a href="/upload" class="btn btn-primary">Upload a Resource</a>
+                <a href="/resources" class="btn btn-secondary">View Uploaded Resources</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Study Resource Sharing Platform</p>
+    </footer>
+</body>
+</html>

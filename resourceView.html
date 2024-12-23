@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resource Preview</title>
+    <link rel="stylesheet" href="/css/resourceView_style.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <header>
+        <nav class="navbar">
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/resources">Resources</a></li>
+                <li><a href="/upload">Upload</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Resource Preview Section -->
+    <section class="resource-preview-section">
+        <!-- Left Side: PDF Viewer -->
+        <div class="pdf-viewer">
+            <!-- Embed the preview.html as an iframe -->
+         <iframe src="https://mozilla.github.io/pdf.js/web/viewer.html?file=https://nithishfileupload.s3.us-east-2.amazonaws.com/(1)+Richard+Osman+-+We+Solve+Murders.pdf" 
+            width="100%" 
+            height="600px" 
+            frameborder="0">
+    </iframe>
+
+        </div>
+
+        <!-- Right Side: Comment Section -->
+        <div class="comment-section">
+            <h3>Leave a Comment</h3>
+            <!-- Form for submitting a comment -->
+            <form action="/resources/comment" method="POST">
+                <textarea name="commentText" placeholder="Write your comment here..." required></textarea><br><br>
+                <input type="hidden" name="resourceId" th:value="${resource.id}"> <!-- Set the resource ID dynamically -->
+                <button type="submit" class="btn btn-primary">Submit Comment</button>
+            </form>
+
+            <!-- Display Comments -->
+            <div class="comments">
+                <h4>Comments</h4>
+                <!-- Loop through all the comments for the resource -->
+                <div class="comment-item" th:each="comment : ${comments}">
+                    <!-- Assuming comment has a user property with a username -->
+                    <p><strong th:text="${comment.user.username}"></strong></p>
+                    <p th:text="${comment.text}"></p>
+                    <p>Posted on: <span th:text="${comment.createdAt}"></span></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Study Resource Sharing Platform</p>
+    </footer>
+</body>
+</html>

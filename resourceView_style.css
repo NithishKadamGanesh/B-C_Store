@@ -1,0 +1,141 @@
+/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f8f8;
+    color: #333;
+}
+
+/* Navigation Bar */
+.navbar {
+    background-color: #007BFF;
+    padding: 1rem;
+    text-align: center;
+}
+
+/* Styling for iframe */
+
+
+
+.navbar ul {
+    list-style-type: none;
+}
+
+.navbar li {
+    display: inline;
+    margin: 0 1rem;
+}
+
+.navbar a {
+    text-decoration: none;
+    color: white;
+    font-size: 1rem;
+}
+
+.navbar a:hover {
+    opacity: 0.8;
+}
+
+/* Resource Preview Section */
+.resource-preview-section {
+    display: flex;
+    justify-content: space-between;
+    padding: 2rem;
+    gap: 2rem;
+}
+
+/* PDF Viewer */
+.pdf-viewer {
+    width: 70%;
+    height: 600px;
+    border: 1px solid #ddd;
+}
+
+/* Review Section */
+.review-section {
+    width: 25%;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    background-color: #fff;
+}
+
+.review-section h3 {
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.review-section form textarea {
+    width: 100%;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 5px;
+    resize: none; /* Disable resize */
+}
+
+.review-section form select {
+    padding: 0.5rem;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.review-section .btn {
+    padding: 1rem 3rem;
+    font-size: 1rem;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.review-section .btn:hover {
+    background-color: #0056b3;
+}
+
+/* Reviews Container */
+.reviews {
+    margin-top: 2rem;
+    max-height: 300px; /* Set a fixed height */
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding-right: 10px; /* Prevent scrollbars from overlapping the content */
+}
+
+.review-item {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    margin-top: 3rem;
+    padding: 1rem;
+    background-color: #333;
+    color: white;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .resource-preview-section {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .pdf-viewer {
+        width: 100%;
+        height: auto; /* Adjust height for responsiveness */
+    }
+
+    .review-section {
+        width: 100%;
+        margin-top: 2rem; /* Space between sections */
+    }
+}

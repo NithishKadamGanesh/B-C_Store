@@ -1,0 +1,91 @@
+/* Login & Registration Form Section */
+.login-section, .registration-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f8f8f8;
+}
+
+.login-form, .registration-form {
+    background-color: white;
+    padding: 2rem;
+    border: 1px solid #ddd;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+}
+
+button[type="submit"] {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1rem;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* Footer Styles */
+footer {
+    text-align: center;
+    margin-top: 3rem;
+    padding: 1rem;
+    background-color: #333;
+    color: white;
+}
+
+/* Navigation Bar Styles (Copied from style.css) */
+/* Navigation Bar */
+.navbar {
+    background-color: #007BFF;
+    padding: 1rem;
+    text-align: center;
+}
+
+.navbar ul {
+    list-style-type: none;
+}
+
+.navbar li {
+    display: inline;
+    margin: 0 1rem;
+}
+
+.navbar a {
+    text-decoration: none;
+    color: white;
+    font-size: 1rem;
+}
+
+.navbar a:hover {
+    opacity: 0.8;
+}

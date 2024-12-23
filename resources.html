@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resources</title>
+    <link rel="stylesheet" href="/css/resources_style.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <header>
+        <nav class="navbar">
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/resources">Resources</a></li>
+                <li><a href="/upload">Upload</a></li>
+                <li>
+                    <form action="/logout" method="POST" style="display: inline;">
+                        <button type="submit" class="btn btn-logout">Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Resources Section -->
+    <section class="resources-section">
+        <h2>Available Resources</h2>
+        <div class="cards-container">
+            <!-- Loop through each resource and display it as a card -->
+            <div class="resource-card" th:each="resource : ${resources}">
+                <!-- Display the first page of the resource as thumbnail -->
+                <h3 th:text="${resource.title}"></h3>
+                <p th:text="${resource.description}"></p>
+                <p><strong>Tags: </strong><span th:text="${resource.tags}"></span></p>
+                <!-- Preview button linking to resource view page -->
+                <a th:href="@{/preview/{id}(id=${resource.id})}" class="btn">Preview</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Study Resource Sharing Platform</p>
+    </footer>
+</body>
+</html>

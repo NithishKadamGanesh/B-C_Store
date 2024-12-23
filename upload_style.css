@@ -1,0 +1,155 @@
+/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f8f8;
+    color: #333;
+}
+
+/* Navigation Bar */
+.navbar {
+    background-color: #007BFF;
+    padding: 1rem;
+    text-align: center;
+}
+
+.navbar ul {
+    list-style-type: none;
+}
+
+.navbar li {
+    display: inline;
+    margin: 0 1rem;
+}
+
+.navbar a {
+    text-decoration: none;
+    color: white;
+    font-size: 1rem;
+}
+
+.navbar a:hover {
+    opacity: 0.8;
+}
+
+.navbar ul {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center the navigation items */
+    padding: 0;
+    position: relative; /* Enable positioning for the Logout button */
+}
+
+.navbar li {
+    margin: 0 20px; /* Space between menu items */
+}
+
+.btn-logout {
+            background-color: #ff4b5c; /* Red button for attention */
+            color: white; /* White text */
+            border: none; /* Remove border */
+            border-radius: 5px; /* Rounded corners */
+            padding: 10px 15px; /* Padding inside the button */
+            font-size: 16px; /* Font size */
+            cursor: pointer; /* Pointer cursor */
+            transition: background-color 0.3s ease; /* Smooth hover transition */
+        }
+        .btn-logout:hover {
+            background-color: #d93b4a; /* Slightly darker red on hover */
+        }
+        .btn-logout:active {
+            background-color: #c5303e; /* Even darker red on click */
+        }
+        
+ .navbar li:last-child {
+    position: absolute; /* Position the Logout button independently */
+    right: 10px; /* Align it to the right of the navbar */
+    margin-right: 0; /* Remove extra margin */
+}  
+
+/* Upload Form Section */
+.upload-section {
+    background-color: #ffffff;
+    padding: 3rem 2rem;
+    text-align: center;
+    margin-top: 2rem;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.upload-section h2 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 2rem;
+}
+
+.upload-section form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.upload-section label {
+    font-size: 1rem;
+    margin: 0.5rem 0;
+}
+
+.upload-section input,
+.upload-section textarea {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.upload-section button {
+    padding: 1rem 3rem;
+    font-size: 1rem;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.upload-section button:hover {
+    background-color: #0056b3;
+}
+
+.btn-secondary {
+    font-size: 1rem;
+    text-align: center;
+    display: block;
+    margin-bottom: 20px;
+}
+
+.btn-secondary a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.btn-secondary a:hover {
+    text-decoration: underline;
+}
+
+/* Footer Styles */
+footer {
+    text-align: center;
+    margin-top: 3rem;
+    padding: 1rem;
+    background-color: #333;
+    color: white;
+}

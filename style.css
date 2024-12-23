@@ -1,0 +1,148 @@
+/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body Styles */
+html, body {
+    height: 100%; /* Ensure full height of the viewport */
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f8f8;
+    color: #333;
+    display: flex; /* Use flexbox for body layout */
+    flex-direction: column; /* Arrange child elements in a column */
+}
+
+/* Navigation Bar */
+.navbar {
+    background-color: #007BFF;
+    padding: 1rem;
+    text-align: center;
+}
+
+.navbar ul {
+    list-style-type: none;
+}
+
+.navbar li {
+    display: inline;
+    margin: 0 1rem;
+}
+
+.navbar a {
+    text-decoration: none;
+    color: white;
+    font-size: 1rem;
+}
+
+.navbar a:hover {
+    opacity: 0.8;
+}
+
+/* Hero Section */
+.hero-section {
+    background-color: #ffffff;
+    padding: 4rem 2rem;
+    text-align: center;
+    margin-top: 2rem;
+    flex: 1; /* Make the section take available space */
+}
+
+.hero-content h1 {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.hero-content p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.btn {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    border-radius: 5px;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-secondary {
+    background-color: #28a745;
+    color: white;
+    border: none;
+}
+
+.btn-secondary:hover {
+    background-color: #218838;
+}
+
+
+.btn-logout {
+            background-color: #ff4b5c; /* Red button for attention */
+            color: white; /* White text */
+            border: none; /* Remove border */
+            border-radius: 5px; /* Rounded corners */
+            padding: 10px 15px; /* Padding inside the button */
+            font-size: 16px; /* Font size */
+            cursor: pointer; /* Pointer cursor */
+            transition: background-color 0.3s ease; /* Smooth hover transition */
+        }
+        .btn-logout:hover {
+            background-color: #d93b4a; /* Slightly darker red on hover */
+        }
+        .btn-logout:active {
+            background-color: #c5303e; /* Even darker red on click */
+        }
+        
+ .navbar li:last-child {
+    position: absolute; /* Position the Logout button independently */
+    right: 10px; /* Align it to the right of the navbar */
+    margin-right: 0; /* Remove extra margin */
+}       
+
+.navbar ul {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center the navigation items */
+    padding: 0;
+    position: relative; /* Enable positioning for the Logout button */
+}
+
+.navbar li {
+    margin: 0 20px; /* Space between menu items */
+}
+
+
+
+/* Footer Styles */
+footer {
+    text-align: center;
+    padding: 1rem;
+    background-color: #333;
+    color: white;
+    flex-shrink: 0; /* Prevent footer from shrinking */
+}
