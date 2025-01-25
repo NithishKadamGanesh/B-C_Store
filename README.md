@@ -1,9 +1,9 @@
 # Study Resource Sharing Platform
 
-The **Study Resource Sharing Platform** is a web application that enables students to upload, share, and manage study resources efficiently. With AWS S3 integration for file storage and MySQL for metadata management, students can securely upload study materials enriched with metadata and easily browse or preview resources within the platform.
+The **Books and Comics Store** is a web application that enables readers to upload, share, and manage reading resources efficiently. With AWS S3 integration for file storage and MySQL for metadata management, readers can securely upload study materials enriched with metadata and easily browse or preview resources within the platform.
 
 ## Features
-- **Upload Study Resources**: Students can upload files with metadata, including title, description, and tags.
+- **Upload Study Resources**: readers can upload files with metadata, including title, description, and tags.
 - **List and View Resources**: Display uploaded resources in a list format, with an option for previewing each resource.
 - **AWS S3 Integration**: Secure file storage in an AWS S3 bucket.
 - **MySQL Database**: Store metadata about each resource, such as title, description, tags, and upload date.
