@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('My Resources - StudyShare')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <main class="main-content">
+        <div th:replace="~{fragments/layout :: alerts}"></div>
+
+        <section class="page-section">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">My Resources</h1>
+                    <p class="page-subtitle" th:text="${resources.size()} + ' files uploaded'"></p>
+                </div>
+                <a th:href="@{/upload}" class="btn btn-primary">+ Upload New</a>
+            </div>
+
+            <div class="table-wrapper" th:if="${!resources.isEmpty()}">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Type</th>
+                            <th>Size</th>
+                            <th>Tags</th>
+                            <th>Uploaded</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="resource : ${resources}">
+                            <td th:text="${resource.title}"></td>
+                            <td><span class="badge" th:text="${resource.isPdf() ? 'PDF' : (resource.isImage() ? 'Image' : 'Doc')}"></span></td>
+                            <td th:text="${resource.formattedFileSize}"></td>
+                            <td th:text="${resource.tags}"></td>
+                            <td th:text="${#temporals.format(resource.uploadDate, 'MMM d, yyyy')}"></td>
+                            <td class="actions-cell">
+                                <a th:href="@{/preview/{id}(id=${resource.id})}" class="btn btn-ghost btn-sm">Preview</a>
+                                <form th:action="@{/resources/{id}/delete(id=${resource.id})}" method="post" class="inline-form"
+                                      onsubmit="return confirm('Are you sure you want to delete this resource?')">
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="empty-state" th:if="${resources.isEmpty()}">
+                <span class="empty-icon">&#128466;</span>
+                <h3>No uploads yet</h3>
+                <p>Start sharing your study materials with the community!</p>
+                <a th:href="@{/upload}" class="btn btn-primary">Upload Your First Resource</a>
+            </div>
+        </section>
+    </main>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

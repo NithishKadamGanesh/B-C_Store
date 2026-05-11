@@ -1,37 +1,64 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Resource</title>
-    <link rel="stylesheet" href="/upload_style.css">
-</head>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Upload Resource - StudyShare')}"></head>
 <body>
-   <div class="container">
-    <h1>Upload a Study Resource</h1>
-    <form action="/resources/upload" method="post" enctype="multipart/form-data">
-        <div class="form-group">
-            <label for="title">Title:</label>
-            <input type="text" id="title" name="title" required>
-        </div>
-        <div class="form-group">
-            <label for="description">Description:</label>
-            <textarea id="description" name="description" required></textarea>
-        </div>
-        <div class="form-group">
-            <label for="tags">Tags (comma separated):</label>
-            <input type="text" id="tags" name="tags" required>
-        </div>
-        <div class="form-group">
-            <label for="file">File:</label>
-            <input type="file" id="file" name="file" required>
-        </div>
-        <button type="submit">Upload</button>
-    </form>
-    <div class="back-link">
-        <a href="/">Back to Home</a>
-    </div>
-</div>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
+    <main class="main-content">
+        <div th:replace="~{fragments/layout :: alerts}"></div>
+
+        <section class="page-section">
+            <div class="form-container">
+                <h1 class="page-title">Upload a Resource</h1>
+                <p class="page-subtitle">Share your study materials with the community</p>
+
+                <form action="/resources/upload" method="post" enctype="multipart/form-data" class="upload-form">
+                    <div class="form-group">
+                        <label for="title">Title <span class="required">*</span></label>
+                        <input type="text" id="title" name="title" placeholder="e.g. Linear Algebra Chapter 3 Notes" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description" rows="4" placeholder="Brief description of what this resource covers..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tags">Tags <span class="required">*</span></label>
+                        <input type="text" id="tags" name="tags" placeholder="e.g. math, linear-algebra, exam-prep (comma separated)" required>
+                        <span class="field-hint">Separate tags with commas to help others find your resource</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="file">File <span class="required">*</span></label>
+                        <div class="file-upload-area" id="dropZone">
+                            <input type="file" id="file" name="file" accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.doc,.docx,.ppt,.pptx,.txt" required>
+                            <div class="file-upload-text">
+                                <span class="upload-icon">&#128193;</span>
+                                <p>Click to choose a file or drag it here</p>
+                                <span class="field-hint">PDF, Images, Word, PowerPoint, Text (max 100MB)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-lg">Upload Resource</button>
+                        <a th:href="@{/resources}" class="btn btn-ghost">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+
+    <script>
+        document.getElementById('file').addEventListener('change', function() {
+            const fileName = this.files[0]?.name;
+            if (fileName) {
+                document.querySelector('.file-upload-text p').textContent = fileName;
+            }
+        });
+    </script>
 </body>
 </html>

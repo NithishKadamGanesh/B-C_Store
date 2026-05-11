@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<!-- ── Reusable head fragment ── -->
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Study Share</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<!-- ── Navbar fragment ── -->
+<nav th:fragment="navbar" class="navbar">
+    <div class="nav-container">
+        <a href="/" class="nav-brand">
+            <span class="brand-icon">&#128218;</span> StudyShare
+        </a>
+        <div class="nav-links">
+            <a th:href="@{/}" class="nav-link">Home</a>
+            <a th:href="@{/resources}" class="nav-link">Browse</a>
+            <a th:href="@{/upload}" class="nav-link">Upload</a>
+            <a th:href="@{/my-resources}" class="nav-link">My Files</a>
+        </div>
+        <div class="nav-actions" sec:authorize="isAuthenticated()">
+            <span class="nav-user" sec:authentication="name"></span>
+            <form th:action="@{/logout}" method="post" class="inline-form">
+                <button type="submit" class="btn btn-outline btn-sm">Logout</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<!-- ── Footer fragment ── -->
+<footer th:fragment="footer" class="footer">
+    <div class="footer-container">
+        <p>&copy; 2025 StudyShare Platform. Built for students, by students.</p>
+    </div>
+</footer>
+
+<!-- ── Flash messages fragment ── -->
+<div th:fragment="alerts" class="alerts-container">
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+    <div th:if="${message}" class="alert alert-info" th:text="${message}"></div>
+</div>
+
+</html>

@@ -1,194 +1,177 @@
-# Study Resource Sharing Platform
+# StudyShare - Study Resource Sharing Platform
 
-The **Study Resource Sharing Platform** is a web application that enables students to upload, share, and manage study resources efficiently. With AWS S3 integration for file storage and MySQL for metadata management, students can securely upload study materials enriched with metadata and easily browse or preview resources within the platform.
+A modern **Spring Boot 3.2** web application that enables students to upload, share, discover, and preview study resources. Built with AWS S3 for cloud storage, MySQL for data persistence, and Spring Security for authentication.
+
+---
 
 ## Features
-- **Upload Study Resources**: Students can upload files with metadata, including title, description, and tags.
-- **List and View Resources**: Display uploaded resources in a list format, with an option for previewing each resource.
-- **AWS S3 Integration**: Secure file storage in an AWS S3 bucket.
-- **MySQL Database**: Store metadata about each resource, such as title, description, tags, and upload date.
+
+- **User Authentication** - Register, login, and secure sessions with BCrypt password hashing
+- **Resource Upload** - Upload PDFs, images, Word docs, PowerPoint, and text files (up to 100MB)
+- **Search & Filter** - Full-text search by title, description, or tags with pagination
+- **Tag-Based Browsing** - Click any tag to filter resources instantly
+- **In-Browser Preview** - PDF viewer with page navigation (PDF.js) and image preview
+- **Resource Management** - View, manage, and delete your own uploads
+- **Resource Ownership** - Each upload is linked to the authenticated user
+- **Responsive Design** - Modern UI that works on desktop, tablet, and mobile
+- **Cloud Storage** - Secure file storage in AWS S3 with unique keys
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| **Framework** | Spring Boot 3.2.5 (Java 17) |
+| **Security** | Spring Security 6 with BCrypt |
+| **ORM** | Spring Data JPA / Hibernate |
+| **Database** | MySQL 8+ |
+| **Templates** | Thymeleaf with layout fragments |
+| **Storage** | AWS S3 (SDK v2) |
+| **Build** | Maven |
 
 ---
 
 ## Prerequisites
 
-To set up the project locally, ensure the following dependencies are installed:
-- **Java** 8 or higher
-- **Maven** (for building the project)
-- **MySQL** (version 8.0.40 or higher)
-- **AWS S3 Bucket** for file storage
+- **Java 17** or higher
+- **Maven 3.8+**
+- **MySQL 8.0+**
+- **AWS Account** with an S3 bucket
 
 ---
 
-## MySQL Setup
+## Quick Start
 
-1. Install **MySQL** version 8.0.40 (or higher).
-2. Execute the following operations in order:
+### 1. Database Setup
 
-```bash
+```sql
 CREATE DATABASE study_resources;
-
-USE study_resources;
-
-
-CREATE USER 'db_new_user'@'localhost' IDENTIFIED BY 'password';
-
-GRANT ALL PRIVILEGES ON file_upload_db.* TO 'db_new_user'@'localhost';
-
-FLUSH PRIVILEGES;
-
-
-CREATE TABLE file_metadata (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    file_name VARCHAR(255) NOT NULL,
-    file_type VARCHAR(50) NOT NULL,
-    file_url VARCHAR(255) NOT NULL,
-    upload_time DATETIME NOT NULL
-);
 ```
 
-# AWS S3 Setup
+### 2. Environment Variables
 
-1. **Create an S3 bucket** in your AWS account.
-2. **Obtain your AWS Access Key, Secret Key,** and **S3 bucket name.**
-3. Update your AWS credentials in the `application.properties` file:
+Set these before running (never hardcode credentials!):
 
+```bash
+export DB_URL=jdbc:mysql://localhost:3306/study_resources
+export DB_USERNAME=root
+export DB_PASSWORD=your-db-password
+export AWS_S3_BUCKET_NAME=your-bucket-name
+export AWS_S3_REGION=us-east-2
+export AWS_ACCESS_KEY_ID=your-access-key
+export AWS_SECRET_KEY=your-secret-key
 ```
-   aws.s3.bucketName=your-bucket-name
-   
-   aws.accessKeyId=your-access-key
-   
-   aws.secretKey=your-secret-key
-   
-   aws.region=your-region
- ```
 
-### Step 4: Access the Application
+Or on Windows:
 
-Once the application is running, open your browser and go to:
+```powershell
+$env:DB_PASSWORD = "your-db-password"
+$env:AWS_S3_BUCKET_NAME = "your-bucket-name"
+$env:AWS_S3_REGION = "us-east-2"
+$env:AWS_ACCESS_KEY_ID = "your-access-key"
+$env:AWS_SECRET_KEY = "your-secret-key"
+```
 
-http://localhost:8080
+### 3. Build & Run
 
-This will load the home page of the Study Resource Sharing Platform.
+```bash
+cd study-resource-sharing-platform
+mvn clean install
+mvn spring-boot:run
+```
+
+### 4. Access the Application
+
+Open **http://localhost:8080** - you'll be redirected to the login page. Register a new account to get started.
 
 ---
 
+## Project Structure
 
-## Folder Structure
-```bash
+```
 study-resource-sharing-platform/
-├── src
-│   ├── main
-│   │   ├── java
-│   │   │   └── com.studyshare.platform
-│   │   │       ├── controller       # Contains the application controllers
-│   │   │       ├── model            # Contains the entity models
-│   │   │       ├── repository       # Contains the JPA repository interfaces
-│   │   │       └── service          # Contains the business logic services
-│   ├── resources
-│   │   └── application.properties   # Contains the application configurations
-│   │   ├── static       # Contains the static content files(css etc.)
-│   │   ├── template     # Contains the Views(html file)
-│   ├── test
-│   │   └── java
-│   │       └── com.studyshare.platform # Contains the unit tests for services and controllers
+├── src/main/java/com/studyshare/platform/
+│   ├── StudyResourceSharingPlatformApplication.java
+│   ├── config/
+│   │   ├── S3Config.java              # AWS S3 client configuration
+│   │   └── SecurityConfig.java        # Spring Security 6 filter chain
+│   ├── controller/
+│   │   ├── AuthController.java        # Login & registration
+│   │   ├── HomeController.java        # Dashboard with stats
+│   │   ├── ResourceController.java    # Upload, browse, search, delete
+│   │   ├── PreviewController.java     # File preview (PDF/image)
+│   │   └── CustomErrorController.java # Error pages
+│   ├── dto/
+│   │   └── RegistrationRequest.java   # Validated registration form
+│   ├── exception/
+│   │   ├── GlobalExceptionHandler.java
+│   │   └── ResourceNotFoundException.java
+│   ├── model/
+│   │   ├── User.java                  # UserDetails implementation
+│   │   ├── Role.java                  # ManyToMany roles
+│   │   └── Resource.java             # File metadata + S3 reference
+│   ├── repository/
+│   │   ├── UserRepository.java
+│   │   ├── RoleRepository.java
+│   │   └── ResourceRepository.java    # Search & pagination queries
+│   └── service/
+│       ├── UserService.java           # Registration + UserDetailsService
+│       ├── ResourceService.java       # Upload, search, CRUD
+│       └── PreviewService.java        # S3 URL generation
+├── src/main/resources/
+│   ├── application.properties         # Config with env var defaults
+│   ├── static/css/style.css           # Unified modern stylesheet
+│   └── templates/
+│       ├── fragments/layout.html      # Shared navbar, footer, alerts
+│       ├── home.html                  # Dashboard with stats & features
+│       ├── login.html                 # Login form
+│       ├── register.html              # Registration with validation
+│       ├── upload.html                # File upload form
+│       ├── resources.html             # Browse with search & pagination
+│       ├── my-resources.html          # Manage your uploads
+│       ├── preview.html               # PDF.js / image viewer
+│       └── error.html                 # Custom error page
+├── .gitignore
 ├── pom.xml
-├── README.md
-└── target
+└── README.md
 ```
 
-## Running Unit Tests
+---
 
-The project includes unit tests for the services and controllers. You can run the tests using Maven:
+## Key Improvements Over Original
+
+| Area | Before | After |
+|------|--------|-------|
+| **Spring Boot** | 2.5.5 (javax) | 3.2.5 (Jakarta EE) |
+| **Security** | Deprecated `WebSecurityConfigurerAdapter`, CSRF disabled | Modern `SecurityFilterChain`, proper form login |
+| **Data Model** | Broken Role (`@OneToMany` + `unique` = only 1 user per role) | Proper `@ManyToMany` User-Role relationship |
+| **Resource Ownership** | Resources unlinked to users | Each resource belongs to its uploader |
+| **Credentials** | AWS keys hardcoded in properties | Environment variables with safe defaults |
+| **Search** | None | Full-text search + tag filtering + pagination |
+| **File Types** | PDF + images only | PDF, images, Word, PowerPoint, text |
+| **Frontend** | 7 separate CSS files, duplicated styles | Single unified CSS with design system |
+| **Templates** | No shared layout, inconsistent design | Thymeleaf fragments with consistent modern UI |
+| **Error Handling** | Generic catch-all | `@ControllerAdvice` with typed exceptions |
+| **Validation** | Manual string checks | Jakarta Bean Validation with `@Valid` |
+| **Code Quality** | Excessive Javadoc, bugs (broken `toString()`) | Clean, concise, Lombok-powered |
+
+---
+
+## Running Tests
 
 ```bash
-mvn test;
+mvn test
 ```
 
+---
 
 ## Future Enhancements
 
-## 1. User Authentication
-
-- Implements **login and registration functionality** for users.
-- Allows secure access to the platform and personal content.
-
-## 2. User Management
-
-- Introduces **user roles** to enable content moderation by admins.
-- Ensures that user permissions are aligned with their roles (e.g., admin, regular user).
-
-
-## 3. Improved Search
-
-- Adds **filters** to search uploaded resources by:
-  - **Tags**
-  - **Title**
-  - **Description**
-- Enhances content discoverability and user experience.
-
-
-## 4. Enhanced File Preview
-
-- Expands file preview capabilities to support **additional file types**.
-
-
-## 5. Comments Feature
-
-- Allows **user interaction and feedback** on uploaded content by enabling comments on notes.
-- Includes:
-  - A **comments section** on the note preview page.
-  - A **form** to submit comments.
-
-
-## 6. Rating System
-
-- Enables users to **rate notes on a scale** (e.g., 1 to 5).
-- Displays the **average rating** on the note preview page, providing feedback on note quality.
-
-
-## 7. Bookmarking Feature
-
-- Allows users to **bookmark notes** for quick access later.
-- Includes a **bookmark management page** where users can view and remove their bookmarked notes.
-
-## 8. Notifications
-
-- Users receive **notifications** when an admin approves or rejects their notes.
-
-
-## 9. Activity Feed
-
-- A **personalized activity feed** displays recent user actions, such as adding comments, rating notes, and uploading notes.
-- Allows users to **track their own actions** within the platform.
-
-
-
-## 10. Enhanced File Analytics (Views and Downloads)
-
-- Tracks and displays **view and download counts** for each note.
-- Users can see how many times a note has been viewed or downloaded, adding value to the content.
-
-
-## 11. Home Page with Dashboard
-
-- A **personalized home page** with links to frequently used sections (My Notes, Bookmarks, Notifications).
-- Provides a **dashboard view** of recent uploads and access to user-specific data, enhancing the user experience.
-
-
-
-## 12. Session Management and Security Enhancements
-
-- Configured **Spring Security** for:
-  - **Session invalidation** on logout.
-  - **Session fixation protection**.
-  - **Single active session per user** for added security.
-- These security configurations ensure secure session handling and protection against common session-based vulnerabilities.
-
-
-## 13. Profile Management
-
-- Users can **view and update** their profile information.
-- Allows users to manage their personal details, improving user control over their account.
-
-   
+- Comments / discussion on resources
+- Rating system (1-5 stars)
+- Bookmarking / favorites
+- Admin dashboard with content moderation
+- Download tracking and analytics
+- User profile pages
+- Email notifications

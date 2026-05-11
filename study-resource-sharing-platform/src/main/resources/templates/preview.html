@@ -1,123 +1,105 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <link
-      rel="stylesheet"
-      href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
-      integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr"
-      crossorigin="anonymous"
-    />
-    <link rel="stylesheet" href="/style.css" />
-    <title>PDF Viewer</title>
-  </head>
-  <body>
-    <div class="top-bar">
-      <button class="btn" id="prev-page">
-        <i class="fas fa-arrow-circle-left"></i> Prev Page
-      </button>
-      <button class="btn" id="next-page">
-        Next Page <i class="fas fa-arrow-circle-right"></i>
-      </button>
-      <span class="page-info">
-        Page <span id="page-num"></span> of <span id="page-count"></span>
-      </span>
-      <button class="btn-back" onclick="window.location.href='/resources'">Back</button>
-    </div>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Preview - StudyShare')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
-    <div id="pdf-render-container">
-    <canvas id="pdf-render"></canvas>
-</div>
+    <main class="main-content">
+        <section class="page-section">
+            <!-- Resource Info Bar -->
+            <div class="preview-header">
+                <div class="preview-info">
+                    <h1 class="page-title" th:text="${resource.title}"></h1>
+                    <div class="preview-meta">
+                        <span class="badge" th:text="${resource.isPdf() ? 'PDF' : (resource.isImage() ? 'Image' : 'Doc')}"></span>
+                        <span th:text="${resource.formattedFileSize}"></span>
+                        <span th:text="'Uploaded ' + ${#temporals.format(resource.uploadDate, 'MMM d, yyyy')}"></span>
+                        <span th:text="'by ' + ${resource.uploader.displayName != null ? resource.uploader.displayName : resource.uploader.username}"></span>
+                    </div>
+                    <p class="preview-desc" th:if="${resource.description != null and !resource.description.isEmpty()}" th:text="${resource.description}"></p>
+                    <div class="card-tags" th:if="${resource.tags != null}">
+                        <a th:each="tag : ${resource.tags.split(',')}"
+                           th:href="@{/resources(tag=${tag.trim()})}"
+                           class="tag" th:text="${tag.trim()}"></a>
+                    </div>
+                </div>
+                <div class="preview-actions">
+                    <a th:href="${fileUrl}" target="_blank" class="btn btn-primary">Open in New Tab</a>
+                    <a th:href="@{/resources}" class="btn btn-ghost">Back to Browse</a>
+                </div>
+            </div>
 
+            <!-- Preview Area -->
+            <div class="preview-container">
+                <!-- PDF Preview -->
+                <div th:if="${resource.isPdf()}" class="pdf-viewer">
+                    <div class="pdf-toolbar">
+                        <button class="btn btn-ghost btn-sm" id="prev-page">&#9664; Prev</button>
+                        <span class="page-info">Page <span id="page-num">1</span> of <span id="page-count">-</span></span>
+                        <button class="btn btn-ghost btn-sm" id="next-page">Next &#9654;</button>
+                    </div>
+                    <div class="pdf-canvas-wrapper">
+                        <canvas id="pdf-render"></canvas>
+                    </div>
+                </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.js"></script>
-     <!--   <script src="/main.js"></script> -->
-    
-    <script>
-    const url = '[[${pdfUrl}]]';  // Thymeleaf will replace this with the actual URL from the controller
+                <!-- Image Preview -->
+                <div th:if="${resource.isImage()}" class="image-viewer">
+                    <img th:src="${fileUrl}" th:alt="${resource.title}" class="preview-image">
+                </div>
 
-    let pdfDoc = null,
-        pageNum = 1,
-        pageIsRendering = false,
-        pageNumIsPending = null;
+                <!-- Other File Types -->
+                <div th:unless="${resource.isPdf() or resource.isImage()}" class="file-preview-fallback">
+                    <span class="fallback-icon">&#128196;</span>
+                    <h3 th:text="${resource.fileName}"></h3>
+                    <p>This file type cannot be previewed in the browser.</p>
+                    <a th:href="${fileUrl}" target="_blank" class="btn btn-primary">Download / Open File</a>
+                </div>
+            </div>
+        </section>
+    </main>
 
-    const scale = 1.5,
-          canvas = document.querySelector('#pdf-render'),
-          ctx = canvas.getContext('2d');
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
 
-    // Render the page
-    const renderPage = num => {
-        pageIsRendering = true;
+    <!-- PDF.js (only loaded for PDFs) -->
+    <script th:if="${resource.isPdf()}" src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script th:if="${resource.isPdf()}" th:inline="javascript">
+        const url = [[${fileUrl}]];
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-        // Get page
-        pdfDoc.getPage(num).then(page => {
-            const viewport = page.getViewport({ scale });
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
+        let pdfDoc = null, pageNum = 1, rendering = false, pending = null;
+        const scale = 1.5, canvas = document.getElementById('pdf-render'), ctx = canvas.getContext('2d');
 
-            const renderCtx = {
-                canvasContext: ctx,
-                viewport: viewport
-            };
-
-            page.render(renderCtx).promise.then(() => {
-                pageIsRendering = false;
-
-                if (pageNumIsPending !== null) {
-                    renderPage(pageNumIsPending);
-                    pageNumIsPending = null;
-                }
+        function renderPage(num) {
+            rendering = true;
+            pdfDoc.getPage(num).then(page => {
+                const viewport = page.getViewport({ scale });
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                page.render({ canvasContext: ctx, viewport }).promise.then(() => {
+                    rendering = false;
+                    if (pending !== null) { renderPage(pending); pending = null; }
+                });
+                document.getElementById('page-num').textContent = num;
             });
+        }
 
-            // Update page number
-            document.querySelector('#page-num').textContent = num;
+        function queueRender(num) { rendering ? (pending = num) : renderPage(num); }
+
+        document.getElementById('prev-page').addEventListener('click', () => {
+            if (pageNum > 1) { pageNum--; queueRender(pageNum); }
         });
-    };
+        document.getElementById('next-page').addEventListener('click', () => {
+            if (pageNum < pdfDoc.numPages) { pageNum++; queueRender(pageNum); }
+        });
 
-    // Queue for rendering the next page
-    const queueRenderPage = num => {
-        if (pageIsRendering) {
-            pageNumIsPending = num;
-        } else {
-            renderPage(num);
-        }
-    };
-
-    // Show Previous Page
-    document.querySelector('#prev-page').addEventListener('click', () => {
-        if (pageNum <= 1) {
-            return;
-        }
-        pageNum--;
-        queueRenderPage(pageNum);
-    });
-
-    // Show Next Page
-    document.querySelector('#next-page').addEventListener('click', () => {
-        if (pageNum >= pdfDoc.numPages) {
-            return;
-        }
-        pageNum++;
-        queueRenderPage(pageNum);
-    });
-
-    // Load Document
-    pdfjsLib.getDocument(url).promise.then(pdfDoc_ => {
-        pdfDoc = pdfDoc_;
-        document.querySelector('#page-count').textContent = pdfDoc.numPages;
-        renderPage(pageNum);  // Render the first page
-    }).catch(err => {
-        // Error handling
-        const div = document.createElement('div');
-        div.className = 'error';
-        div.appendChild(document.createTextNode(err.message));
-        document.querySelector('body').insertBefore(div, canvas);
-        document.querySelector('.top-bar').style.display = 'none';
-    });
-</script>
-
-  </body>
+        pdfjsLib.getDocument(url).promise.then(doc => {
+            pdfDoc = doc;
+            document.getElementById('page-count').textContent = doc.numPages;
+            renderPage(1);
+        }).catch(err => {
+            canvas.parentElement.innerHTML = '<div class="file-preview-fallback"><p>Could not load PDF: ' + err.message + '</p><a href="' + url + '" target="_blank" class="btn btn-primary">Open File Directly</a></div>';
+        });
+    </script>
+</body>
 </html>

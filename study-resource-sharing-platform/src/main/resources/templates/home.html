@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('StudyShare - Home')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <main class="main-content">
+        <div th:replace="~{fragments/layout :: alerts}"></div>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Share Knowledge,<br>Ace Your Studies</h1>
+                <p>Upload, discover, and collaborate on study materials with your peers. PDFs, notes, presentations - all in one place.</p>
+                <div class="hero-actions">
+                    <a th:href="@{/upload}" class="btn btn-primary btn-lg">Upload a Resource</a>
+                    <a th:href="@{/resources}" class="btn btn-secondary btn-lg">Browse Resources</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-number" th:text="${totalResources}">0</span>
+                    <span class="stat-label">Total Resources</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" th:text="${myResources}">0</span>
+                    <span class="stat-label">Your Uploads</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">&#9734;</span>
+                    <span class="stat-label">Free Forever</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features-section">
+            <h2>How It Works</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">&#128228;</div>
+                    <h3>Upload</h3>
+                    <p>Share your study materials - PDFs, images, documents, presentations - securely stored in the cloud.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#128269;</div>
+                    <h3>Discover</h3>
+                    <p>Search and browse resources by title, tags, or description. Find exactly what you need.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#128064;</div>
+                    <h3>Preview</h3>
+                    <p>View PDFs and images directly in your browser. No downloads needed.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

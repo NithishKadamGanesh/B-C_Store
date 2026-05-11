@@ -1,121 +1,146 @@
 package com.studyshare.platform.service;
 
+import com.studyshare.platform.exception.ResourceNotFoundException;
 import com.studyshare.platform.model.Resource;
+import com.studyshare.platform.model.User;
 import com.studyshare.platform.repository.ResourceRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 import software.amazon.awssdk.core.sync.RequestBody;
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-/**
- * Service class for managing resources in the Study Resource Sharing Platform.
- * <p>
- * This service provides functionality for uploading, retrieving, and managing resource files in AWS S3
- * and their corresponding metadata in the database.
- * </p>
- *
- * @see ResourceRepository
- * @see S3Client
- * @since 1.0
- */
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
 @Service
 public class ResourceService {
 
-    /**
-     * AWS S3 client for handling file uploads.
-     */
-    private final S3Client s3Client;
+    private static final Logger log = LoggerFactory.getLogger(ResourceService.class);
+    private static final Set<String> ALLOWED_TYPES = Set.of(
+            "application/pdf", "image/jpeg", "image/png", "image/gif",
+            "image/webp", "application/msword",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/vnd.ms-powerpoint",
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+            "text/plain"
+    );
 
-    /**
-     * Repository for accessing and storing resource data.
-     */
+    private final S3Client s3Client;
     private final ResourceRepository resourceRepository;
 
-    /**
-     * The name of the S3 bucket, injected from application properties.
-     */
     @Value("${aws.s3.bucketName}")
     private String bucketName;
 
-    /**
-     * Constructs a new ResourceService with the specified S3 client and repository.
-     *
-     * @param s3Client the S3 client for AWS S3 interactions.
-     * @param resourceRepository the repository for managing resource entities.
-     */
+    @Value("${aws.s3.region}")
+    private String region;
+
     public ResourceService(S3Client s3Client, ResourceRepository resourceRepository) {
         this.s3Client = s3Client;
         this.resourceRepository = resourceRepository;
     }
 
-    /**
-     * Uploads a resource file to AWS S3 and saves the resource metadata to the database.
-     * <p>
-     * This method generates a unique file key for the uploaded file, uploads it to S3,
-     * and saves the file's URL and metadata in the database. The file is made publicly readable.
-     * </p>
-     *
-     * @param file the file to upload.
-     * @param title the title of the resource.
-     * @param description the description of the resource.
-     * @param tags the tags associated with the resource.
-     * @throws IOException if an error occurs during file upload.
-     */
-    public void uploadResource(MultipartFile file, String title, String description, String tags) throws IOException {
-        
-        String fileKey = file.getOriginalFilename();
+    public Resource uploadResource(MultipartFile file, String title, String description, String tags, User uploader) throws IOException {
+        validateFile(file);
 
-        // Upload file to S3
-        System.out.println("fileKey " + fileKey);
-        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .bucket(bucketName)
-                .key(fileKey)
-                .contentType(file.getContentType())
-                .acl(ObjectCannedACL.PUBLIC_READ)
-                .build();
+        String originalFilename = file.getOriginalFilename();
+        String extension = originalFilename != null && originalFilename.contains(".")
+                ? originalFilename.substring(originalFilename.lastIndexOf("."))
+                : "";
+        String s3Key = "uploads/" + UUID.randomUUID() + extension;
 
-        // Wrap the file's InputStream in RequestBody
-        PutObjectResponse putObjectResponse = s3Client.putObject(putObjectRequest, 
-                RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
+        try {
+            PutObjectRequest putRequest = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(s3Key)
+                    .contentType(file.getContentType())
+                    .build();
 
-        // Create resource entity and save it to the database
+            s3Client.putObject(putRequest, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
+            log.info("Uploaded file to S3: {}", s3Key);
+        } catch (Exception e) {
+            throw new IOException("Failed to upload file to S3: " + e.getMessage(), e);
+        }
+
         Resource resource = new Resource();
-        resource.setTitle(title);
-        resource.setDescription(description);
-        resource.setTags(tags);
-        resource.setUploadDate(new Date());
+        resource.setTitle(title.trim());
+        resource.setDescription(description != null ? description.trim() : "");
+        resource.setTags(tags.trim().toLowerCase());
+        resource.setFileName(originalFilename);
+        resource.setFileType(file.getContentType());
+        resource.setFileSize(file.getSize());
+        resource.setS3Key(s3Key);
+        resource.setS3Url(buildS3Url(s3Key));
+        resource.setUploadDate(LocalDateTime.now());
+        resource.setUploader(uploader);
 
-        // Get the S3 file URL and save it to resource
-        String fileUrl = "https://" + bucketName + ".s3.amazonaws.com/" + fileKey;
-        resource.setS3Url(fileUrl);
-
-        resourceRepository.save(resource);
+        return resourceRepository.save(resource);
     }
 
-    /**
-     * Retrieves all resources stored in the database.
-     *
-     * @return a list of all resources.
-     */
-    public List<Resource> getAllResources() {
-        return resourceRepository.findAll();
+    public Page<Resource> getAllResources(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return resourceRepository.findAllByOrderByUploadDateDesc(pageable);
     }
 
-    /**
-     * Retrieves a resource by its ID.
-     *
-     * @param id the ID of the resource.
-     * @return the resource with the specified ID.
-     * @throws RuntimeException if the resource is not found.
-     */
+    public Page<Resource> searchResources(String query, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return resourceRepository.search(query.trim(), pageable);
+    }
+
+    public Page<Resource> getResourcesByTag(String tag, int page, int size) {
+        return resourceRepository.findByTag(tag.trim(), PageRequest.of(page, size));
+    }
+
     public Resource getResourceById(Long id) {
-        return resourceRepository.findById(id).orElseThrow(() -> new RuntimeException("Resource not found"));
+        return resourceRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Resource not found with ID: " + id));
+    }
+
+    public List<Resource> getResourcesByUser(User user) {
+        return resourceRepository.findByUploaderOrderByUploadDateDesc(user);
+    }
+
+    public void deleteResource(Long id, User currentUser) {
+        Resource resource = getResourceById(id);
+        if (!resource.getUploader().getId().equals(currentUser.getId())) {
+            throw new SecurityException("You can only delete your own resources");
+        }
+
+        try {
+            s3Client.deleteObject(DeleteObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(resource.getS3Key())
+                    .build());
+            log.info("Deleted file from S3: {}", resource.getS3Key());
+        } catch (Exception e) {
+            log.error("Failed to delete S3 object: {}", e.getMessage());
+        }
+
+        resourceRepository.delete(resource);
+    }
+
+    private void validateFile(MultipartFile file) {
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("File cannot be empty");
+        }
+        String contentType = file.getContentType();
+        if (contentType == null || !ALLOWED_TYPES.contains(contentType)) {
+            throw new IllegalArgumentException(
+                "Invalid file type: " + contentType + ". Allowed types: PDF, images, Word, PowerPoint, plain text.");
+        }
+    }
+
+    private String buildS3Url(String s3Key) {
+        return String.format("https://%s.s3.%s.amazonaws.com/%s", bucketName, region, s3Key);
     }
 }

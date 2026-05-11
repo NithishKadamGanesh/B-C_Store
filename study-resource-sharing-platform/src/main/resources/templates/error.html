@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Error - StudyShare')}"></head>
+<body class="auth-page">
+    <div class="error-page">
+        <div class="error-card">
+            <span class="error-icon">&#9888;</span>
+            <h1 th:text="${errorTitle} ?: 'Something Went Wrong'"></h1>
+            <p th:text="${errorMessage} ?: 'An unexpected error occurred. Please try again.'"></p>
+            <div class="error-actions">
+                <a href="/" class="btn btn-primary">Go Home</a>
+                <a href="javascript:history.back()" class="btn btn-ghost">Go Back</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

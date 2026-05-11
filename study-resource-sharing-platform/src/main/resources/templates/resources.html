@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Browse Resources - StudyShare')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <main class="main-content">
+        <div th:replace="~{fragments/layout :: alerts}"></div>
+
+        <section class="page-section">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Browse Resources</h1>
+                    <p class="page-subtitle" th:text="${totalItems} + ' resources available'"></p>
+                </div>
+                <a th:href="@{/upload}" class="btn btn-primary">+ Upload New</a>
+            </div>
+
+            <!-- Search Bar -->
+            <form th:action="@{/resources}" method="get" class="search-bar">
+                <input type="text" name="search" th:value="${search}" placeholder="Search by title, description, or tags..." class="search-input">
+                <button type="submit" class="btn btn-primary">Search</button>
+                <a th:if="${search != null and !search.isEmpty()}" th:href="@{/resources}" class="btn btn-ghost">Clear</a>
+            </form>
+
+            <!-- Active Tag Filter -->
+            <div th:if="${tag != null and !tag.isEmpty()}" class="active-filter">
+                <span>Filtered by tag: <strong th:text="${tag}"></strong></span>
+                <a th:href="@{/resources}" class="btn btn-ghost btn-sm">Clear filter</a>
+            </div>
+
+            <!-- Resource Cards Grid -->
+            <div class="cards-grid" th:if="${!resources.isEmpty()}">
+                <div class="resource-card" th:each="resource : ${resources}">
+                    <div class="card-header">
+                        <span class="card-type" th:text="${resource.isPdf() ? 'PDF' : (resource.isImage() ? 'Image' : 'Doc')}"></span>
+                        <span class="card-size" th:text="${resource.formattedFileSize}"></span>
+                    </div>
+                    <h3 class="card-title" th:text="${resource.title}"></h3>
+                    <p class="card-desc" th:text="${resource.description}"></p>
+                    <div class="card-tags">
+                        <a th:each="tag : ${resource.tags.split(',')}"
+                           th:href="@{/resources(tag=${tag.trim()})}"
+                           class="tag"
+                           th:text="${tag.trim()}"></a>
+                    </div>
+                    <div class="card-meta">
+                        <span th:text="'By ' + ${resource.uploader.displayName != null ? resource.uploader.displayName : resource.uploader.username}"></span>
+                        <span th:text="${#temporals.format(resource.uploadDate, 'MMM d, yyyy')}"></span>
+                    </div>
+                    <a th:href="@{/preview/{id}(id=${resource.id})}" class="btn btn-secondary btn-full">Preview</a>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state" th:if="${resources.isEmpty()}">
+                <span class="empty-icon">&#128466;</span>
+                <h3>No resources found</h3>
+                <p th:if="${search != null and !search.isEmpty()}">Try a different search term.</p>
+                <p th:unless="${search != null and !search.isEmpty()}">Be the first to upload a study resource!</p>
+                <a th:href="@{/upload}" class="btn btn-primary">Upload Resource</a>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination" th:if="${totalPages > 1}">
+                <a th:href="@{/resources(page=${currentPage - 1}, search=${search}, tag=${tag})}"
+                   th:classappend="${currentPage == 0} ? 'disabled'"
+                   class="btn btn-ghost btn-sm">&laquo; Previous</a>
+                <span class="page-info" th:text="'Page ' + (${currentPage + 1}) + ' of ' + ${totalPages}"></span>
+                <a th:href="@{/resources(page=${currentPage + 1}, search=${search}, tag=${tag})}"
+                   th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'"
+                   class="btn btn-ghost btn-sm">Next &raquo;</a>
+            </div>
+        </section>
+    </main>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
